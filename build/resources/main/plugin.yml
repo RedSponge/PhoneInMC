@@ -1,0 +1,6 @@
+name: PhoneInMC
+version: 1.0
+main: com.redsponge.phoneinmc.PhoneInMC
+authors: [RedSponge]
+description: Creating a phone in minecraft!
+api-version: 1.13
