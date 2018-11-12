@@ -11,12 +11,20 @@ import java.awt.image.DataBufferInt;
 public class MCImage {
 
     private Material[][] blocks;
-    private Object[][] colors = {{Color.WHITE, Material.WHITE_WOOL}, {Color.RED, Material.RED_WOOL}, {Color.BLACK, Material.BLACK_WOOL},
-            {Color.YELLOW, Material.YELLOW_WOOL}, {Color.GREEN, Material.GREEN_WOOL}, {Color.BLUE, Material.BLUE_WOOL},
-            {Color.ORANGE, Material.ORANGE_WOOL}, {Color.LIGHT_GRAY, Material.LIGHT_GRAY_WOOL}, {Color.DARK_GRAY, Material.GRAY_WOOL},
-            {new Color(141, 65, 0), Material.BROWN_WOOL}, {new Color(122, 26, 142), Material.PURPLE_WOOL},
-            {Color.PINK, Material.PINK_WOOL}
+    private static Object[][] materials = {
+            {Material.BLACK_WOOL, new Color(0, 0, 0)},
+            {Material.YELLOW_WOOL, Color.YELLOW},
+            {Material.BLUE_WOOL, Color.BLUE},
+            {Material.RED_WOOL, Color.RED},
+            {Material.LIGHT_GRAY_WOOL, Color.LIGHT_GRAY},
+            {Material.GRAY_WOOL, Color.DARK_GRAY},
+            {Material.OAK_WOOD, new Color(211, 176, 130)},
+            {Material.LIME_WOOL, Color.GREEN},
+            {Material.GREEN_WOOL, new Color(0, 148, 0)},
+            {Material.WHITE_WOOL, Color.WHITE},
+            {Material.PURPLE_WOOL, new Color(117, 12, 180)}
     };
+
     public MCImage(BufferedImage img) {
         blocks = new Material[Constants.HEIGHT][Constants.WIDTH];
 
@@ -35,18 +43,23 @@ public class MCImage {
         int r = (pixel >> 16) & 0xff;
         int g = (pixel >> 8) & 0xff;
         int b = (pixel) & 0xff;
-        System.out.println(r + " " + g + " " + b);
-        Color c = new Color(pixel, true);
-        int closest = 0;
-        double lowestDist = Integer.MAX_VALUE;
-        for(int i = 0; i < colors.length; i++) {
-            double dist = AdistanceFromB(c, (Color)colors[i][0]);
-            if(dist < lowestDist) {
-                lowestDist = dist;
-                closest = i;
+
+
+        byte bestMatchIndex = -1;
+        int bestDiff = Integer.MAX_VALUE;
+        for (byte i = 0; i < materials.length; i = (byte)(i + 1))
+        {
+            Color c = (Color)materials[i][1];
+            int diff = Math.abs(c.getRed() - r) * Math.abs(c.getRed() - r) +
+                    Math.abs(c.getGreen() - g) * Math.abs(c.getGreen() - g) +
+                    Math.abs(c.getBlue() - b) * Math.abs(c.getBlue() - b);
+            if (diff < bestDiff)
+            {
+                bestMatchIndex = i;
+                bestDiff = diff;
             }
         }
-        return (Material)colors[closest][1];
+        return (Material) materials[bestMatchIndex][0];
     }
 
     public double AdistanceFromB(Color a, Color b) {
